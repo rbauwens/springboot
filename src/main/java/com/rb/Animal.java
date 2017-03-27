@@ -5,7 +5,13 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * Created by ruth on 14/03/17.
  */
-public class AnimalType {
+public class Animal {
+
+    @ApiModelProperty(
+            dataType = "java.lang.Integer",
+            example = "1",
+            required = false)
+    public Integer index;
 
     @ApiModelProperty(
             dataType = "java.lang.String",

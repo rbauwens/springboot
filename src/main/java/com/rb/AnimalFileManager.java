@@ -1,8 +1,7 @@
 package com.rb;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -10,7 +9,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * Created by ruth on 13/03/17.
  */
-class Animals {
+class AnimalFileManager {
 
     private File animalsFile;
 
@@ -34,15 +33,46 @@ class Animals {
         return animalsList;
     }
 
-    boolean animalExists(String animal) throws FileNotFoundException {
+    Map<Integer, String> getMap() throws FileNotFoundException {
+        Scanner s = new Scanner(this.animalsFile);
 
-        ArrayList<String> animalList = getList();
-        if (animalList.contains(animal)) {
+        Map<Integer, String> map = new HashMap<>();
+
+        while (s.hasNext()) {
+            String fileEntry = s.next();
+            String[] splitResult = fileEntry.split(":");
+            map.put(Integer.valueOf(splitResult[0]), splitResult[1]);
+        }
+        s.close();
+
+        return map;
+    }
+
+    boolean animalExists(String animal) throws FileNotFoundException {
+        Map<Integer, String> animalMap = getMap();
+
+        if (animalMap.containsValue(animal)) {
             return true;
         }
 
         return false;
 
+    }
+
+    boolean animalExists(Integer index) throws FileNotFoundException {
+        Map<Integer, String> animalMap = getMap();
+
+        if (animalMap.containsKey(index)) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    String getAnimalByIndex(Integer index) throws FileNotFoundException {
+        Map<Integer, String> animalMap = getMap();
+        return animalMap.get(index);
     }
 
     /**
@@ -58,11 +88,19 @@ class Animals {
             return false;
         }
 
+        Map<Integer, String> animalMap = getMap();
+        int nextNumber = 1;
+        if (animalMap.size() > 0) {
+            int highestValue = Collections.max(animalMap.keySet());
+            nextNumber = highestValue + 1;
+        }
+
         BufferedWriter bw = null;
 
         try {
             bw = new BufferedWriter(new FileWriter(this.getAnimalsFile(), true));
-            bw.write(newAnimal);
+            String stringToWrite = nextNumber + ":" + newAnimal;
+            bw.write(stringToWrite);
             bw.newLine();
             bw.flush();
         } catch (IOException ioe) {
@@ -101,7 +139,7 @@ class Animals {
         String currentLine;
 
         while((currentLine = reader.readLine()) != null) {
-            if(!currentLine.equalsIgnoreCase(animalToDelete)){
+            if(!currentLine.contains(animalToDelete)){
                 writer.write(currentLine + System.getProperty("line.separator"));
             }
         }
