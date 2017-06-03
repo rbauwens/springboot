@@ -101,7 +101,7 @@ public class AnimalFileManagerTest {
         animalExists = this.animalFileManager.animalExists(1);
         assertThat(animalExists, is(true));
 
-        String animalInFile = this.animalFileManager.getAnimalByIndex(1);
+        String animalInFile = this.animalFileManager.getAnimalNameByIndex(1);
         assertThat(animalInFile, is("aardvark"));
     }
 
@@ -119,30 +119,30 @@ public class AnimalFileManagerTest {
         assertThat(this.animalFileManager.animalExists(1), is(true));
         assertThat(this.animalFileManager.animalExists(2), is(true));
 
-        assertThat(this.animalFileManager.getAnimalByIndex(1), is(animal1));
-        assertThat(this.animalFileManager.getAnimalByIndex(2), is(animal2));
+        assertThat(this.animalFileManager.getAnimalNameByIndex(1), is(animal1));
+        assertThat(this.animalFileManager.getAnimalNameByIndex(2), is(animal2));
     }
 
     @Test
     public void addAnimal() throws FileNotFoundException {
         String newAnimal = "aardvark";
 
-        boolean status = this.animalFileManager.addAnimal(newAnimal);
-        assertThat(status, is(true));
+        int newIndex = this.animalFileManager.addAnimal(newAnimal);
+        assertThat(newIndex, is(not(0)));
 
-        status = this.animalFileManager.addAnimal(newAnimal);
-        assertThat(status, is(false));
+        newIndex = this.animalFileManager.addAnimal(newAnimal);
+        assertThat(newIndex, is(0));
     }
 
     @Test
     public void addTwoAnimals() throws FileNotFoundException {
         String newAnimal = "mouse";
-        boolean status = this.animalFileManager.addAnimal(newAnimal);
-        assertThat(status, is(true));
+        int newIndex = this.animalFileManager.addAnimal(newAnimal);
+        assertThat(newIndex, is(not(0)));
 
         newAnimal = "zebra";
-        status = this.animalFileManager.addAnimal(newAnimal);
-        assertThat(status, is(true));
+        newIndex = this.animalFileManager.addAnimal(newAnimal);
+        assertThat(newIndex, is(not(0)));
 
         assertThat(this.animalFileManager.animalExists("mouse"), is(true));
         assertThat(this.animalFileManager.animalExists("zebra"), is(true));

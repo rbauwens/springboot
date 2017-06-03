@@ -70,9 +70,14 @@ class AnimalFileManager {
 
     }
 
-    String getAnimalByIndex(Integer index) throws FileNotFoundException {
+    String getAnimalNameByIndex(Integer index) throws FileNotFoundException {
         Map<Integer, String> animalMap = getMap();
         return animalMap.get(index);
+    }
+
+    Animal getAnimalByIndex(Integer index) throws FileNotFoundException {
+        Map<Integer, String> animalMap = getMap();
+        return new Animal(index, animalMap.get(index));
     }
 
     /**
@@ -82,10 +87,10 @@ class AnimalFileManager {
      * @return true if animal was successfully added.
      * Returns false if the animal already exists in the list
      */
-    boolean addAnimal(String newAnimal) throws FileNotFoundException {
+    int addAnimal(String newAnimal) throws FileNotFoundException {
 
         if (animalExists(newAnimal)) {
-            return false;
+            return 0;
         }
 
         Map<Integer, String> animalMap = getMap();
@@ -113,7 +118,11 @@ class AnimalFileManager {
             }
         }
 
-        return animalExists(newAnimal);
+        if (!animalExists(newAnimal)) {
+            return 0;
+        }
+
+        return nextNumber;
 
     }
 

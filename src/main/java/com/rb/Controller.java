@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -37,7 +36,7 @@ public class Controller {
             File animalsFile = new File(Constants.ANIMALS_LIST);
             animalFileManager.setAnimalsFile(animalsFile);
             Map<Integer, String> animalsMap = animalFileManager.getMap();
-            String returnString= animalsMap.toString();
+            String returnString = animalsMap.toString();
             return animalsMap.toString();
         } catch (FileNotFoundException ex) {
             return "Animal File does not exist. Check configuration";
@@ -45,44 +44,55 @@ public class Controller {
     }
 
     @ApiOperation(value = "getAnimal", nickname = "getAnimal")
-    @RequestMapping(method = RequestMethod.GET, path = "/animals/{index}")
+    @RequestMapping(method = RequestMethod.GET, path = "/animals/{index}", produces = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = String.class)})
-    public String getAnimal(@PathVariable Integer index) {
+            @ApiResponse(code = 200, message = "Success", response = AnimalResponse.class)})
+    public AnimalResponse getAnimal(@PathVariable Integer index) {
+
+        AnimalResponse animalResponse = new AnimalResponse();
+
         try {
             AnimalFileManager animalFileManager = new AnimalFileManager();
             File animalsFile = new File(Constants.ANIMALS_LIST);
             animalFileManager.setAnimalsFile(animalsFile);
 
             if (!animalFileManager.animalExists(index)) {
-             return String.format("No animal with index %d exists in the file", index);
+                animalResponse.error = String.format("No animal with index %d exists in the file", index);
+                return animalResponse;
             }
-            return animalFileManager.getAnimalByIndex(index);
+            animalResponse.animal = animalFileManager.getAnimalByIndex(index);
+            return animalResponse;
 
         } catch (FileNotFoundException ex) {
-            return "Animal File does not exist. Check configuration";
+            animalResponse.error = "Animal File does not exist. Check configuration";
+            return animalResponse;
         }
     }
 
     @ApiOperation(value = "addAnimal", nickname = "addAnimal")
-    @RequestMapping(method = RequestMethod.POST, path = "/animals/add")
+    @RequestMapping(method = RequestMethod.POST, path = "/animals/add", produces = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = String.class)})
-    public String addAnimalController(@RequestBody(required = true) Animal newAnimal){
+            @ApiResponse(code = 200, message = "Success", response = AnimalResponse.class)})
+    public AnimalResponse addAnimalController(@RequestBody(required = true) Animal newAnimal) {
+        AnimalResponse animalResponse = new AnimalResponse();
         try {
             AnimalFileManager animalFileManager = new AnimalFileManager();
             File animalsFile = new File(Constants.ANIMALS_LIST);
             animalFileManager.setAnimalsFile(animalsFile);
 
-            boolean status = animalFileManager.addAnimal(newAnimal.name);
+            newAnimal.index = animalFileManager.addAnimal(newAnimal.name);
 
-            if (status) {
-                return "Success!";
+            if (newAnimal.index == 0) {
+                animalResponse.error = "Failure";
+                return animalResponse;
             } else {
-                return "Failure!";
+                animalResponse.animal = newAnimal;
+                return animalResponse;
+
             }
         } catch (FileNotFoundException ex) {
-            return "Animal File does not exist. Check configuration";
+            animalResponse.error = "Animal File does not exist. Check configuration";
+            return animalResponse;
         }
     }
 

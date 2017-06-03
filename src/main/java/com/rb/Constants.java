@@ -6,4 +6,5 @@ package com.rb;
 public class Constants {
 
     public static final String ANIMALS_LIST = System.getProperty("user.home") + "/Documents/animals";
+    public static final String WILLS_FILE= "src/main/resources/NorfolkWills";
 }

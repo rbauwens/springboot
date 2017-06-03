@@ -34,7 +34,7 @@ public class ControllerTest {
 
     @Test
     public void getListControllerTest() throws Exception {
-        mockMvc.perform(get("/list"))
+        mockMvc.perform(get("/animals/1"))
                 .andExpect(status().isOk());
     }
 }
